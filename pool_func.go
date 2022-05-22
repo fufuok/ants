@@ -172,7 +172,7 @@ func NewPoolWithFunc(size int, pf func(interface{}), options ...Option) (*PoolWi
 	return p, nil
 }
 
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 // Invoke submits a task to pool.
 //
@@ -232,6 +232,16 @@ func (p *PoolWithFunc) Tune(size int) {
 	}
 }
 
+// MaxBlockingTasks returns the the maximum number of goroutines that are blocked when it reaches the capacity of pool.
+func (p *PoolWithFunc) MaxBlockingTasks() int {
+	return int(atomic.LoadInt32(&p.options.MaxBlockingTasks))
+}
+
+// TuneMaxBlockingTasks changes the maximum number of goroutines that are blocked when it reaches the capacity of pool.
+func (p *PoolWithFunc) TuneMaxBlockingTasks(size int) {
+	atomic.StoreInt32(&p.options.MaxBlockingTasks, int32(size))
+}
+
 // IsClosed indicates whether the pool is closed.
 func (p *PoolWithFunc) IsClosed() bool {
 	return atomic.LoadInt32(&p.state) == CLOSED
@@ -284,7 +294,7 @@ func (p *PoolWithFunc) Reboot() {
 	}
 }
 
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
 func (p *PoolWithFunc) addRunning(delta int) {
 	atomic.AddInt32(&p.running, int32(delta))
@@ -320,7 +330,7 @@ func (p *PoolWithFunc) retrieveWorker() (w *goWorkerWithFunc) {
 			return
 		}
 	retry:
-		if p.options.MaxBlockingTasks != 0 && p.Waiting() >= p.options.MaxBlockingTasks {
+		if p.MaxBlockingTasks() != 0 && p.Waiting() >= p.MaxBlockingTasks() {
 			p.lock.Unlock()
 			return
 		}

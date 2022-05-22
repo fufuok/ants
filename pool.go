@@ -215,6 +215,16 @@ func (p *Pool) Tune(size int) {
 	}
 }
 
+// MaxBlockingTasks returns the the maximum number of goroutines that are blocked when it reaches the capacity of pool.
+func (p *Pool) MaxBlockingTasks() int {
+	return int(atomic.LoadInt32(&p.options.MaxBlockingTasks))
+}
+
+// TuneMaxBlockingTasks changes the maximum number of goroutines that are blocked when it reaches the capacity of pool.
+func (p *Pool) TuneMaxBlockingTasks(size int) {
+	atomic.StoreInt32(&p.options.MaxBlockingTasks, int32(size))
+}
+
 // IsClosed indicates whether the pool is closed.
 func (p *Pool) IsClosed() bool {
 	return atomic.LoadInt32(&p.state) == CLOSED
@@ -296,7 +306,7 @@ func (p *Pool) retrieveWorker() (w *goWorker) {
 			return
 		}
 	retry:
-		if p.options.MaxBlockingTasks != 0 && p.Waiting() >= p.options.MaxBlockingTasks {
+		if p.MaxBlockingTasks() != 0 && p.Waiting() >= p.MaxBlockingTasks() {
 			p.lock.Unlock()
 			return
 		}

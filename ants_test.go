@@ -189,9 +189,9 @@ func TestAntsPoolWithFuncGetWorkerFromCachePreMalloc(t *testing.T) {
 	t.Logf("memory usage:%d MB", curMem)
 }
 
-//-------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
 // Contrast between goroutines without a pool and goroutines with ants pool.
-//-------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
 
 func TestNoPool(t *testing.T) {
 	var wg sync.WaitGroup
@@ -232,8 +232,8 @@ func TestAntsPool(t *testing.T) {
 	t.Logf("memory usage:%d MB", curMem)
 }
 
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
 
 func TestPanicHandler(t *testing.T) {
 	var panicCounter int64
@@ -425,6 +425,49 @@ func TestMaxBlockingSubmit(t *testing.T) {
 	}
 }
 
+func TestTuneMaxBlockingSubmit(t *testing.T) {
+	poolSize := 10
+	p, err := NewPool(poolSize, WithMaxBlockingTasks(1))
+	assert.NoErrorf(t, err, "create TimingPool failed: %v", err)
+	defer p.Release()
+	for i := 0; i < poolSize-1; i++ {
+		assert.NoError(t, p.Submit(longRunningFunc), "submit when pool is not full shouldn't return error")
+	}
+	ch := make(chan struct{})
+	f := func() {
+		<-ch
+	}
+	// p is full now.
+	assert.NoError(t, p.Submit(f), "submit when pool is not full shouldn't return error")
+
+	p.TuneMaxBlockingTasks(2)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	errCh := make(chan error, 2)
+	for i := 0; i < 2; i++ {
+		go func() {
+			// should be blocked. blocking num == 2
+			if err := p.Submit(demoFunc); err != nil {
+				errCh <- err
+			}
+			wg.Done()
+		}()
+	}
+	time.Sleep(1 * time.Second)
+	// already reached max blocking limit
+	assert.EqualError(t, p.Submit(demoFunc), ErrPoolOverload.Error(),
+		"blocking submit when pool reach max blocking submit should return ErrPoolOverload")
+	// interrupt f to make blocking submit successful.
+	close(ch)
+	wg.Wait()
+	select {
+	case <-errCh:
+		t.Fatalf("blocking submit when pool is full should not return error")
+	default:
+	}
+}
+
 func TestNonblockingSubmitWithFunc(t *testing.T) {
 	poolSize := 10
 	var wg sync.WaitGroup
@@ -470,6 +513,46 @@ func TestMaxBlockingSubmitWithFunc(t *testing.T) {
 		}
 		wg.Done()
 	}()
+	time.Sleep(1 * time.Second)
+	// already reached max blocking limit
+	assert.EqualErrorf(t, p.Invoke(Param), ErrPoolOverload.Error(),
+		"blocking submit when pool reach max blocking submit should return ErrPoolOverload: %v", err)
+	// interrupt one func to make blocking submit successful.
+	close(ch)
+	wg.Wait()
+	select {
+	case <-errCh:
+		t.Fatalf("blocking submit when pool is full should not return error")
+	default:
+	}
+}
+
+func TestTuneMaxBlockingSubmitWithFunc(t *testing.T) {
+	poolSize := 10
+	p, err := NewPoolWithFunc(poolSize, longRunningPoolFunc, WithMaxBlockingTasks(1))
+	assert.NoError(t, err, "create TimingPool failed: %v", err)
+	defer p.Release()
+	for i := 0; i < poolSize-1; i++ {
+		assert.NoError(t, p.Invoke(Param), "submit when pool is not full shouldn't return error")
+	}
+	ch := make(chan struct{})
+	// p is full now.
+	assert.NoError(t, p.Invoke(ch), "submit when pool is not full shouldn't return error")
+
+	p.TuneMaxBlockingTasks(2)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	errCh := make(chan error, 2)
+	for i := 0; i < 2; i++ {
+		go func() {
+			// should be blocked. blocking num == 2
+			if err := p.Invoke(ch); err != nil {
+				errCh <- err
+			}
+			wg.Done()
+		}()
+	}
 	time.Sleep(1 * time.Second)
 	// already reached max blocking limit
 	assert.EqualErrorf(t, p.Invoke(Param), ErrPoolOverload.Error(),

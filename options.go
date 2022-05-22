@@ -25,7 +25,7 @@ type Options struct {
 
 	// Max number of goroutine blocking on pool.Submit.
 	// 0 (default value) means no such limit.
-	MaxBlockingTasks int
+	MaxBlockingTasks int32
 
 	// When Nonblocking is true, Pool.Submit will never be blocked.
 	// ErrPoolOverload will be returned when Pool.Submit cannot be done at once.
@@ -65,7 +65,7 @@ func WithPreAlloc(preAlloc bool) Option {
 // WithMaxBlockingTasks sets up the maximum number of goroutines that are blocked when it reaches the capacity of pool.
 func WithMaxBlockingTasks(maxBlockingTasks int) Option {
 	return func(opts *Options) {
-		opts.MaxBlockingTasks = maxBlockingTasks
+		opts.MaxBlockingTasks = int32(maxBlockingTasks)
 	}
 }
 
