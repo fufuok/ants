@@ -12,8 +12,13 @@
 <a title="Doc for ants" target="_blank" href="https://pkg.go.dev/github.com/panjf2000/ants/v2?tab=doc"><img src="https://img.shields.io/badge/go.dev-doc-007d9c?style=flat-square&logo=read-the-docs" /></a>
 <a title="Mentioned in Awesome Go" target="_blank" href="https://github.com/avelino/awesome-go#goroutines"><img src="https://awesome.re/mentioned-badge-flat.svg" /></a>
 </p>
-
 English | [🇨🇳中文](README_ZH.md)
+
+
+
+## 🛠 改动
+
+- 增加了: `p.TuneMaxBlockingTasks` 动态调整最大阻塞任务数 [#226](https://github.com/panjf2000/ants/issues/226)
 
 ## 📖 Introduction
 
