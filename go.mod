@@ -1,4 +1,4 @@
-module github.com/panjf2000/ants/v2
+module github.com/fufuok/ants
 
 go 1.18
 
