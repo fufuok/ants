@@ -13,7 +13,7 @@
 <a title="Mentioned in Awesome Go" target="_blank" href="https://github.com/avelino/awesome-go#goroutines"><img src="https://awesome.re/mentioned-badge-flat.svg" /></a>
 </p>
 
-[英文](README.md) | 🇨🇳中文
+[英文](README.md) | 中文
 
 ## 📖 简介
 
@@ -30,7 +30,7 @@
 
 ## ⚔️ 目前测试通过的 Golang 版本：
 
-从 **Go 1.8.x** 到 **Go 1.16.x** 的所有版本。
+从 **Go 1.8.x** 到 **Go 1.18.x** 的所有版本。
 
 ## 💡 `ants` 是如何运行的
 
