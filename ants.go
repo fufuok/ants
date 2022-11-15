@@ -49,7 +49,7 @@ const (
 
 var (
 	//
-	//--------------------------Error types for the Ants API------------------------------
+	// --------------------------Error types for the Ants API------------------------------
 
 	// ErrLackPoolFunc will be returned when invokers don't provide function for pool.
 	ErrLackPoolFunc = errors.New("must provide function for pool")
@@ -69,7 +69,7 @@ var (
 	// ErrTimeout will be returned after the operations timed out.
 	ErrTimeout = errors.New("operation timed out")
 
-	//---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
 
 	// workerChanCap determines whether the channel of a worker should be a buffered channel
 	// to get the best performance. Inspired by fasthttp at
@@ -97,6 +97,11 @@ var (
 type Logger interface {
 	// Printf must have the same semantics as log.Printf.
 	Printf(format string, args ...interface{})
+}
+
+// SetDefaultAntsPool initialize to the default pool.
+func SetDefaultAntsPool(size int, options ...Option) {
+	defaultAntsPool, _ = NewPool(size, options...)
 }
 
 // Submit submits a task to pool.
