@@ -19,6 +19,7 @@ English | [🇨🇳中文](README_ZH.md)
 ## 🛠 改动
 
 - 增加了: `p.TuneMaxBlockingTasks` 动态调整最大阻塞任务数 [#226](https://github.com/panjf2000/ants/issues/226)
+- 增加了默认池初始化方法: `ants.SetDefaultAntsPool(size int, options ...Option)`
 
 ## 📖 Introduction
 
