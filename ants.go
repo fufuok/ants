@@ -96,11 +96,6 @@ type Logger interface {
 	Printf(format string, args ...interface{})
 }
 
-// SetDefaultAntsPool initialize to the default pool.
-func SetDefaultAntsPool(size int, options ...Option) {
-	defaultAntsPool, _ = NewPool(size, options...)
-}
-
 // Submit submits a task to pool.
 func Submit(task func()) error {
 	return defaultAntsPool.Submit(task)
