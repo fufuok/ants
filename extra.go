@@ -28,3 +28,17 @@ func (p *PoolWithFunc) MaxBlockingTasks() int {
 func (p *PoolWithFunc) TuneMaxBlockingTasks(size int) {
 	atomic.StoreInt32(&p.options.MaxBlockingTasks, int32(size))
 }
+
+// TuneMaxBlockingTasks changes the maximum number of goroutines that are blocked  each pool in multi-pool.
+func (mp *MultiPool) TuneMaxBlockingTasks(size int) {
+	for _, pool := range mp.pools {
+		pool.TuneMaxBlockingTasks(size)
+	}
+}
+
+// TuneMaxBlockingTasks changes the maximum number of goroutines that are blocked  each pool in multi-pool.
+func (mp *MultiPoolWithFunc) TuneMaxBlockingTasks(size int) {
+	for _, pool := range mp.pools {
+		pool.TuneMaxBlockingTasks(size)
+	}
+}
