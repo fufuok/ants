@@ -28,6 +28,8 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // MultiPoolWithFunc consists of multiple pools, from which you will benefit the
@@ -45,6 +47,9 @@ type MultiPoolWithFunc struct {
 // NewMultiPoolWithFunc instantiates a MultiPoolWithFunc with a size of the pool list and a size
 // per pool, and the load-balancing strategy.
 func NewMultiPoolWithFunc(size, sizePerPool int, fn func(interface{}), lbs LoadBalancingStrategy, options ...Option) (*MultiPoolWithFunc, error) {
+	if lbs != RoundRobin && lbs != LeastTasks {
+		return nil, ErrInvalidLoadBalancingStrategy
+	}
 	pools := make([]*PoolWithFunc, size)
 	for i := 0; i < size; i++ {
 		pool, err := NewPoolWithFunc(sizePerPool, fn, options...)
@@ -52,9 +57,6 @@ func NewMultiPoolWithFunc(size, sizePerPool int, fn func(interface{}), lbs LoadB
 			return nil, err
 		}
 		pools[i] = pool
-	}
-	if lbs != RoundRobin && lbs != LeastTasks {
-		return nil, ErrInvalidLoadBalancingStrategy
 	}
 	return &MultiPoolWithFunc{pools: pools, lbs: lbs}, nil
 }
@@ -172,14 +174,28 @@ func (mp *MultiPoolWithFunc) ReleaseTimeout(timeout time.Duration) error {
 		return ErrPoolClosed
 	}
 
-	var errStr strings.Builder
+	errCh := make(chan error, len(mp.pools))
+	var wg errgroup.Group
 	for i, pool := range mp.pools {
-		if err := pool.ReleaseTimeout(timeout); err != nil {
-			errStr.WriteString(fmt.Sprintf("pool %d: %v\n", i, err))
-			if i < len(mp.pools)-1 {
-				errStr.WriteString(" | ")
-			}
-			return err
+		func(p *PoolWithFunc, idx int) {
+			wg.Go(func() error {
+				err := p.ReleaseTimeout(timeout)
+				if err != nil {
+					err = fmt.Errorf("pool %d: %v", idx, err)
+				}
+				errCh <- err
+				return err
+			})
+		}(pool, i)
+	}
+
+	_ = wg.Wait()
+
+	var errStr strings.Builder
+	for i := 0; i < len(mp.pools); i++ {
+		if err := <-errCh; err != nil {
+			errStr.WriteString(err.Error())
+			errStr.WriteString(" | ")
 		}
 	}
 
@@ -187,7 +203,7 @@ func (mp *MultiPoolWithFunc) ReleaseTimeout(timeout time.Duration) error {
 		return nil
 	}
 
-	return errors.New(errStr.String())
+	return errors.New(strings.TrimSuffix(errStr.String(), " | "))
 }
 
 // Reboot reboots a released multi-pool.

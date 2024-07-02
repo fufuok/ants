@@ -28,6 +28,8 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // LoadBalancingStrategy represents the type of load-balancing algorithm.
@@ -56,6 +58,9 @@ type MultiPool struct {
 // NewMultiPool instantiates a MultiPool with a size of the pool list and a size
 // per pool, and the load-balancing strategy.
 func NewMultiPool(size, sizePerPool int, lbs LoadBalancingStrategy, options ...Option) (*MultiPool, error) {
+	if lbs != RoundRobin && lbs != LeastTasks {
+		return nil, ErrInvalidLoadBalancingStrategy
+	}
 	pools := make([]*Pool, size)
 	for i := 0; i < size; i++ {
 		pool, err := NewPool(sizePerPool, options...)
@@ -63,9 +68,6 @@ func NewMultiPool(size, sizePerPool int, lbs LoadBalancingStrategy, options ...O
 			return nil, err
 		}
 		pools[i] = pool
-	}
-	if lbs != RoundRobin && lbs != LeastTasks {
-		return nil, ErrInvalidLoadBalancingStrategy
 	}
 	return &MultiPool{pools: pools, lbs: lbs}, nil
 }
@@ -182,14 +184,28 @@ func (mp *MultiPool) ReleaseTimeout(timeout time.Duration) error {
 		return ErrPoolClosed
 	}
 
-	var errStr strings.Builder
+	errCh := make(chan error, len(mp.pools))
+	var wg errgroup.Group
 	for i, pool := range mp.pools {
-		if err := pool.ReleaseTimeout(timeout); err != nil {
-			errStr.WriteString(fmt.Sprintf("pool %d: %v\n", i, err))
-			if i < len(mp.pools)-1 {
-				errStr.WriteString(" | ")
-			}
-			return err
+		func(p *Pool, idx int) {
+			wg.Go(func() error {
+				err := p.ReleaseTimeout(timeout)
+				if err != nil {
+					err = fmt.Errorf("pool %d: %v", idx, err)
+				}
+				errCh <- err
+				return err
+			})
+		}(pool, i)
+	}
+
+	_ = wg.Wait()
+
+	var errStr strings.Builder
+	for i := 0; i < len(mp.pools); i++ {
+		if err := <-errCh; err != nil {
+			errStr.WriteString(err.Error())
+			errStr.WriteString(" | ")
 		}
 	}
 
@@ -197,7 +213,7 @@ func (mp *MultiPool) ReleaseTimeout(timeout time.Duration) error {
 		return nil
 	}
 
-	return errors.New(errStr.String())
+	return errors.New(strings.TrimSuffix(errStr.String(), " | "))
 }
 
 // Reboot reboots a released multi-pool.
