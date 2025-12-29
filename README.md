@@ -2,14 +2,14 @@
 <img src="https://raw.githubusercontent.com/panjf2000/logos/master/ants/logo.png" />
 <b>A goroutine pool for Go</b>
 <br/><br/>
-<a title="Build Status" target="_blank" href="https://github.com/fufuok/ants/actions?query=workflow%3ATests"><img src="https://img.shields.io/github/actions/workflow/status/panjf2000/ants/test.yml?branch=master&style=flat-square&logo=github-actions" /></a>
+<a title="Build Status" target="_blank" href="https://github.com/panjf2000/ants/actions?query=workflow%3ATests"><img src="https://img.shields.io/github/actions/workflow/status/panjf2000/ants/test.yml?branch=master&style=flat-square&logo=github-actions" /></a>
 <a title="Codecov" target="_blank" href="https://codecov.io/gh/panjf2000/ants"><img src="https://img.shields.io/codecov/c/github/panjf2000/ants?style=flat-square&logo=codecov" /></a>
-<a title="Release" target="_blank" href="https://github.com/fufuok/ants/releases"><img src="https://img.shields.io/github/v/release/panjf2000/ants.svg?color=161823&style=flat-square&logo=smartthings" /></a>
-<a title="Tag" target="_blank" href="https://github.com/fufuok/ants/tags"><img src="https://img.shields.io/github/v/tag/panjf2000/ants?color=%23ff8936&logo=fitbit&style=flat-square" /></a>
+<a title="Release" target="_blank" href="https://github.com/panjf2000/ants/releases"><img src="https://img.shields.io/github/v/release/panjf2000/ants.svg?color=161823&style=flat-square&logo=smartthings" /></a>
+<a title="Tag" target="_blank" href="https://github.com/panjf2000/ants/tags"><img src="https://img.shields.io/github/v/tag/panjf2000/ants?color=%23ff8936&logo=fitbit&style=flat-square" /></a>
 <br/>
 <a title="Minimum Go Version" target="_blank" href="https://github.com/panjf2000/gnet"><img src="https://img.shields.io/badge/go-%3E%3D1.18-30dff3?style=flat-square&logo=go" /></a>
-<a title="Go Report Card" target="_blank" href="https://goreportcard.com/report/github.com/fufuok/ants"><img src="https://goreportcard.com/badge/github.com/fufuok/ants?style=flat-square" /></a>
-<a title="Doc for ants" target="_blank" href="https://pkg.go.dev/github.com/fufuok/ants?tab=doc"><img src="https://img.shields.io/badge/go.dev-doc-007d9c?style=flat-square&logo=read-the-docs" /></a>
+<a title="Go Report Card" target="_blank" href="https://goreportcard.com/report/github.com/panjf2000/ants"><img src="https://goreportcard.com/badge/github.com/panjf2000/ants?style=flat-square" /></a>
+<a title="Doc for ants" target="_blank" href="https://pkg.go.dev/github.com/panjf2000/ants/v2?tab=doc"><img src="https://img.shields.io/badge/go.dev-doc-007d9c?style=flat-square&logo=read-the-docs" /></a>
 <a title="Mentioned in Awesome Go" target="_blank" href="https://github.com/avelino/awesome-go#goroutines"><img src="https://awesome.re/mentioned-badge-flat.svg" /></a>
 </p>
 
@@ -57,23 +57,23 @@ Library `ants` implements a goroutine pool with fixed capacity, managing and rec
 ### For `ants` v1
 
 ``` powershell
-go get -u github.com/fufuok/ants
+go get -u github.com/panjf2000/ants
 ```
 
 ### For `ants` v2 (with GO111MODULE=on)
 
 ```powershell
-go get -u github.com/fufuok/ants
+go get -u github.com/panjf2000/ants/v2
 ```
 
 ## 🛠 How to use
-Check out [the examples](https://pkg.go.dev/github.com/fufuok/ants#pkg-examples) for basic usage.
+Check out [the examples](https://pkg.go.dev/github.com/panjf2000/ants/v2#pkg-examples) for basic usage.
 
 ### Functional options for pool
 
 `ants.Options`contains all optional configurations of the ants pool, which allows you to customize the goroutine pool by invoking option functions to set up each configuration in `NewPool`/`NewPoolWithFunc`/`NewPoolWithFuncGeneric` method.
 
-Check out [ants.Options](https://pkg.go.dev/github.com/fufuok/ants#Options) and [ants.Option](https://pkg.go.dev/github.com/fufuok/ants#Option) for more details.
+Check out [ants.Options](https://pkg.go.dev/github.com/panjf2000/ants/v2#Options) and [ants.Option](https://pkg.go.dev/github.com/panjf2000/ants/v2#Option) for more details.
 
 ### Customize pool capacity
 
@@ -135,7 +135,7 @@ All tasks submitted to `ants` pool will not be guaranteed to be addressed in ord
 
 Please read our [Contributing Guidelines](CONTRIBUTING.md) before opening a PR and thank you to all the developers who already made contributions to `ants`!
 
-<a href="https://github.com/fufuok/ants/graphs/contributors">
+<a href="https://github.com/panjf2000/ants/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=panjf2000/ants" />
 </a>
 
@@ -152,7 +152,7 @@ The source code in `ants` is available under the [MIT License](/LICENSE).
 
 ## 🖥 Use cases
 
-### business corporations
+### business corporations & open-source organizations
 
 Trusted by the following corporations/organizations.
 
@@ -263,6 +263,18 @@ Trusted by the following corporations/organizations.
           <img src="https://res.strikefreedom.top/static_res/logos/amap-logo.png" width="250" />
         </a>
       </td>
+      <td align="center" valign="middle">
+        <a href="https://www.apache.org/" target="_blank">
+          <img src="https://res.strikefreedom.top/static_res/logos/asf-estd-1999-logo.jpg" width="250" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://www.coze.com/" target="_blank">
+          <img src="https://res.strikefreedom.top/static_res/logos/coze-logo.png" width="250" />
+        </a>
+      </td>
     </tr>
   </tbody>
 </table>
@@ -278,6 +290,9 @@ The open-source projects below do concurrent programming with the help of `ants`
 - [nps](https://github.com/ehang-io/nps): A lightweight, high-performance, powerful intranet penetration proxy server, with a powerful web management terminal.
 - [TDengine](https://github.com/taosdata/TDengine): TDengine is an open source, high-performance, cloud native time-series database optimized for Internet of Things (IoT), Connected Cars, and Industrial IoT.
 - [siyuan](https://github.com/siyuan-note/siyuan): SiYuan is a local-first personal knowledge management system that supports complete offline use, as well as end-to-end encrypted synchronization.
+- [BillionMail](https://github.com/aaPanel/BillionMail): A future open-source Mail server, Email marketing platform designed to help businesses and individuals manage their email campaigns with ease.
+- [WeKnora](https://github.com/Tencent/WeKnora): An LLM-powered framework designed for deep document understanding and semantic retrieval, especially for handling complex, heterogeneous documents.
+- [coze-loop](https://github.com/coze-dev/coze-loop): A developer-oriented, platform-level solution focused on the development and operation of AI agents.
 - [osmedeus](https://github.com/j3ssie/osmedeus): A Workflow Engine for Offensive Security.
 - [jitsu](https://github.com/jitsucom/jitsu/tree/master): An open-source Segment alternative. Fully-scriptable data ingestion engine for modern data teams. Set-up a real-time data pipeline in minutes, not days.
 - [triangula](https://github.com/RH12503/triangula): Generate high-quality triangulated and polygonal art from images.
@@ -297,9 +312,9 @@ The open-source projects below do concurrent programming with the help of `ants`
 
 #### All use cases:
 
-- [Repositories that depend on ants/v2](https://github.com/fufuok/ants/network/dependents?package_id=UGFja2FnZS0yMjY2ODgxMjg2)
+- [Repositories that depend on ants/v2](https://github.com/panjf2000/ants/network/dependents?package_id=UGFja2FnZS0yMjY2ODgxMjg2)
 
-- [Repositories that depend on ants/v1](https://github.com/fufuok/ants/network/dependents?package_id=UGFja2FnZS0yMjY0ODMzNjEw)
+- [Repositories that depend on ants/v1](https://github.com/panjf2000/ants/network/dependents?package_id=UGFja2FnZS0yMjY0ODMzNjEw)
 
 If you have `ants` integrated into projects, feel free to open a pull request refreshing this list of use cases.
 
@@ -309,25 +324,31 @@ If you have `ants` integrated into projects, feel free to open a pull request re
 
 <a href="https://www.jetbrains.com/?from=ants" target="_blank"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg" alt="JetBrains logo."></a>
 
-## 💰 Backers
-
-Support us with a monthly donation and help us continue our activities.
-
-<a href="https://opencollective.com/ants#backers" target="_blank"><img src="https://opencollective.com/ants/backers.svg"></a>
-
-## 💎 Sponsors
-
-Become a bronze sponsor with a monthly donation of $10 and get your logo on our README on GitHub.
-
-<a href="https://opencollective.com/ants#sponsors" target="_blank"><img src="https://opencollective.com/ants/sponsors.svg"></a>
-
 ## ☕️ Buy me a coffee
 
 > Please be sure to leave your name, GitHub account, or other social media accounts when you donate by the following means so that I can add it to the list of donors as a token of my appreciation.
 
-<img src="https://raw.githubusercontent.com/panjf2000/illustrations/master/payments/WeChatPay.JPG" width="250" align="middle"/>&nbsp;&nbsp;
-<img src="https://raw.githubusercontent.com/panjf2000/illustrations/master/payments/AliPay.JPG" width="250" align="middle"/>&nbsp;&nbsp;
-<a href="https://www.paypal.me/R136a1X" target="_blank"><img src="https://raw.githubusercontent.com/panjf2000/illustrations/master/payments/PayPal.JPG" width="250" align="middle"/></a>&nbsp;&nbsp;
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <a target="_blank" href="https://buymeacoffee.com/panjf2000">
+          <img src="https://res.strikefreedom.top/static_res/logos/bmc_qr.png" width="250" alt="Buy me a coffee" />
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a target="_blank" href="https://www.patreon.com/panjf2000">
+          <img src="https://res.strikefreedom.top/static_res/logos/patreon_logo.png" width="250" alt="Patreon" />
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a target="_blank" href="https://opencollective.com/panjf2000">
+          <img src="https://res.strikefreedom.top/static_res/logos/open-collective-logo.png" width="250" alt="OpenCollective" />
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ## 🔋 Sponsorship
 
