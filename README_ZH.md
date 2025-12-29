@@ -264,13 +264,13 @@ pool.Reboot()
         </a>
       </td>
     </tr>
-		<tr>
+    <tr>
       <td align="center" valign="middle">
         <a href="https://www.coze.cn/" target="_blank">
           <img src="https://res.strikefreedom.top/static_res/logos/coze-logo-cn.png" width="250" />
         </a>
       </td>
-		</tr>
+    </tr>
   </tbody>
 </table>
 如果你也正在生产环境上使用 `ants`，欢迎提 PR 来丰富这份列表。
@@ -327,7 +327,7 @@ pool.Reboot()
     <tr>
       <td align="center" valign="middle">
         <a target="_blank" href="https://buymeacoffee.com/panjf2000">
-          <img src="https://res.strikefreedom.top/static_res/logos/bmc_qr.png" width="250" alt="By me coffee" />
+          <img src="https://res.strikefreedom.top/static_res/logos/bmc_qr.png" width="250" alt="Buy me coffee" />
         </a>
       </td>
       <td align="center" valign="middle">
