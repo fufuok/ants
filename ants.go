@@ -114,6 +114,12 @@ type Pooler interface {
 
 	// TuneMaxBlockingTasks changes the maximum number of goroutines that can be blocked.
 	TuneMaxBlockingTasks(size int)
+
+	// IdleWorkers returns the number of workers currently idle in the pool.
+	IdleWorkers() int
+
+	// TotalWorkers returns the total number of workers in the pool, including both running and idle workers.
+	TotalWorkers() int
 }
 
 const (
