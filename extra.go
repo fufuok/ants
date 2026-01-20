@@ -73,6 +73,32 @@ func TuneMaxBlockingTasks(size int) {
 	defaultAntsPool.TuneMaxBlockingTasks(size)
 }
 
+// IdleWorkers returns the number of workers currently idle in the default pool.
+func IdleWorkers() int {
+	return defaultAntsPool.IdleWorkers()
+}
+
+// TotalWorkers returns the total number of workers in the default pool, including both running and idle workers.
+func TotalWorkers() int {
+	return defaultAntsPool.TotalWorkers()
+}
+
+// Waiting returns the number of tasks waiting to be executed in the default pool.
+func Waiting() int {
+	return defaultAntsPool.Waiting()
+}
+
+// Tune changes the capacity of the default pool.
+// Note that it is noneffective to the infinite or pre-allocation pool.
+func Tune(size int) {
+	defaultAntsPool.Tune(size)
+}
+
+// IsClosed indicates whether the default pool is closed.
+func IsClosed() bool {
+	return defaultAntsPool.IsClosed()
+}
+
 // MaxBlockingTasks returns the maximum number of goroutines that are blocked when it reaches the capacity of pool.
 func (p *poolCommon) MaxBlockingTasks() int {
 	return int(atomic.LoadInt32(&p.options.MaxBlockingTasks))

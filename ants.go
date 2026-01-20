@@ -100,6 +100,16 @@ type Pooler interface {
 	// Free returns the number of available workers in the pool.
 	Free() int
 
+	// Waiting returns the number of tasks waiting to be executed.
+	Waiting() int
+
+	// Tune changes the capacity of this pool.
+	// Note that it is noneffective to the infinite or pre-allocation pool.
+	Tune(size int)
+
+	// IsClosed indicates whether the pool is closed.
+	IsClosed() bool
+
 	// Release releases all resources in the pool.
 	Release()
 
