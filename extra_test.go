@@ -12,10 +12,21 @@ import (
 
 func TestTuneMaxBlockingSubmit(t *testing.T) {
 	poolSize := 10
-	ants.SetDefaultAntsPool(poolSize, ants.WithMaxBlockingTasks(1))
+	// Create a new pool with the specified size and options
+	pool, err := ants.NewPool(poolSize, ants.WithMaxBlockingTasks(1))
+	if err != nil {
+		t.Fatalf("Failed to create pool: %v", err)
+	}
+	// Set the new pool as the default pool
+	ants.SetDefaultAntsPool(pool)
 	defer func() {
 		ants.Release()
-		ants.SetDefaultAntsPool(ants.DefaultAntsPoolSize)
+		// Create a new default pool and set it as the default
+		defaultPool, err := ants.NewPool(ants.DefaultAntsPoolSize)
+		if err != nil {
+			t.Fatalf("Failed to create default pool: %v", err)
+		}
+		ants.SetDefaultAntsPool(defaultPool)
 	}()
 	for i := 0; i < poolSize-1; i++ {
 		require.NoError(t, ants.Submit(longRunningFunc), "submit when pool is not full shouldn't return error")

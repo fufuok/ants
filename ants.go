@@ -43,6 +43,79 @@ import (
 	syncx "github.com/fufuok/ants/pkg/sync"
 )
 
+// Pooler is the interface that all pools must implement to be used as defaultAntsPool.
+// It contains all the methods that defaultAntsPool uses.
+//
+// The interface includes methods for submitting tasks, querying pool status,
+// managing pool lifecycle, and tuning pool parameters.
+//
+// Submit submits a task to the pool.
+// Running returns the number of currently running workers.
+// Cap returns the maximum capacity of the pool.
+// Free returns the number of available workers in the pool.
+// Release releases all resources in the pool.
+// ReleaseTimeout releases all resources in the pool within a timeout.
+// Reboot reboots a released pool.
+// MaxBlockingTasks returns the maximum number of goroutines that can be blocked.
+// TuneMaxBlockingTasks changes the maximum number of goroutines that can be blocked.
+//
+// All pools (Pool, MultiPool, etc.) should implement this interface to be compatible with the default pool.
+//
+// Example:
+//
+//	// Create a MultiPool and set it as the default pool
+//	mp, _ := ants.NewMultiPool(2, 1000, ants.RoundRobin)
+//	ants.SetDefaultAntsPool(mp)
+//
+//	// Submit tasks to the default pool (which is now a MultiPool)
+//	ants.Submit(func() {
+//	    // task logic
+//	})
+//
+// This interface allows for flexible switching between different pool implementations
+// without changing the code that uses the default pool.
+//
+// The Pooler is designed to be comprehensive enough to support all pool operations
+// that might be needed by the default pool, while being simple enough to be implemented
+// by all pool types.
+//
+// Note that some pool implementations may have additional methods that are not included
+// in this interface, but those methods are not used by the default pool.
+//
+// The interface is defined in ants.go to ensure that it's available to all pool implementations
+// and to maintain consistency across the codebase.
+//
+// The Pooler is a key component of the ants library's design, allowing for
+// extensibility and flexibility in how pools are implemented and used.
+type Pooler interface {
+	// Submit submits a task to the pool.
+	Submit(task func()) error
+
+	// Running returns the number of currently running workers.
+	Running() int
+
+	// Cap returns the maximum capacity of the pool.
+	Cap() int
+
+	// Free returns the number of available workers in the pool.
+	Free() int
+
+	// Release releases all resources in the pool.
+	Release()
+
+	// ReleaseTimeout releases all resources in the pool within a timeout.
+	ReleaseTimeout(timeout time.Duration) error
+
+	// Reboot reboots a released pool.
+	Reboot()
+
+	// MaxBlockingTasks returns the maximum number of goroutines that can be blocked.
+	MaxBlockingTasks() int
+
+	// TuneMaxBlockingTasks changes the maximum number of goroutines that can be blocked.
+	TuneMaxBlockingTasks(size int)
+}
+
 const (
 	// DefaultAntsPoolSize is the default capacity for a default goroutine pool.
 	DefaultAntsPoolSize = math.MaxInt32
@@ -105,9 +178,16 @@ var (
 
 	defaultLogger = Logger(log.New(os.Stderr, "[ants]: ", log.LstdFlags|log.Lmsgprefix|log.Lmicroseconds))
 
+	// defaultAntsPool is the default pool instance used by the ants package.
+	// It's initialized with a default pool size and can be replaced with any
+	// Pooler implementation using SetDefaultAntsPool().
+	defaultAntsPool Pooler
+)
+
+func init() {
 	// Init an instance pool when importing ants.
 	defaultAntsPool, _ = NewPool(DefaultAntsPoolSize)
-)
+}
 
 // Submit submits a task to pool.
 func Submit(task func()) error {
