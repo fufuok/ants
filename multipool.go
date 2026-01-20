@@ -44,6 +44,8 @@ const (
 	LeastTasks
 )
 
+var _ Pooler = (*MultiPool)(nil)
+
 // MultiPool consists of multiple pools, from which you will benefit the
 // performance improvement on basis of the fine-grained locking that reduces
 // the lock contention.
@@ -177,6 +179,13 @@ func (mp *MultiPool) Tune(size int) {
 // IsClosed indicates whether the multi-pool is closed.
 func (mp *MultiPool) IsClosed() bool {
 	return atomic.LoadInt32(&mp.state) == CLOSED
+}
+
+// Release closes the multi-pool.
+// It calls ReleaseTimeout with a very long timeout to ensure all resources are released.
+func (mp *MultiPool) Release() {
+	// Use a long timeout to ensure all resources are released
+	_ = mp.ReleaseTimeout(24 * time.Hour)
 }
 
 // ReleaseTimeout closes the multi-pool with a timeout,

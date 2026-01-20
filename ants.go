@@ -122,6 +122,8 @@ type Pooler interface {
 	TotalWorkers() int
 }
 
+var _ Pooler = (*Pool)(nil)
+
 const (
 	// DefaultAntsPoolSize is the default capacity for a default goroutine pool.
 	DefaultAntsPoolSize = math.MaxInt32
