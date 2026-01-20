@@ -17,8 +17,8 @@ func TestTuneMaxBlockingSubmit(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create pool: %v", err)
 	}
-	// Set the new pool as the default pool
-	ants.SetDefaultAntsPool(pool)
+	// Set the new pool as the default pool, and get the old pool
+	oldPool := ants.SwapDefaultAntsPool(pool)
 	defer func() {
 		ants.Release()
 		// Create a new default pool and set it as the default
@@ -26,8 +26,20 @@ func TestTuneMaxBlockingSubmit(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to create default pool: %v", err)
 		}
-		ants.SetDefaultAntsPool(defaultPool)
+		// Set the new default pool and release the temporary pool
+		tempPool := ants.SwapDefaultAntsPool(defaultPool)
+		// Release the old and temporary pools
+		if oldPool != nil {
+			oldPool.Release()
+		}
+		if tempPool != nil && tempPool != defaultPool {
+			tempPool.Release()
+		}
 	}()
+	// Release the old pool, since we're replacing it
+	if oldPool != nil && oldPool != pool {
+		oldPool.Release()
+	}
 	for i := 0; i < poolSize-1; i++ {
 		require.NoError(t, ants.Submit(longRunningFunc), "submit when pool is not full shouldn't return error")
 	}

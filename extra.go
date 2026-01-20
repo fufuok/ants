@@ -4,22 +4,63 @@ import (
 	"sync/atomic"
 )
 
-// SetDefaultAntsPool sets the default pool to the given pool instance.
+// SwapDefaultAntsPool sets the default pool to the given pool instance and returns the old pool.
 // This function allows you to replace the default pool with any implementation of Pooler,
 // such as a MultiPool, MultiPoolWithFunc, or your own custom pool implementation.
+//
+// If the provided pool is nil, the default pool remains unchanged and nil is returned
+// to prevent users from accessing the system default pool for unexpected operations.
+//
+// The old default pool is returned to the caller only when a valid pool is provided,
+// and the caller is responsible for managing its lifecycle.
+// The caller should release the old pool when it's no longer needed to prevent goroutine leaks.
 //
 // Example:
 //
 //	// Create a MultiPool and set it as the default pool
 //	mp, _ := ants.NewMultiPool(2, 1000, ants.RoundRobin)
-//	ants.SetDefaultAntsPool(mp)
+//	oldPool := ants.SwapDefaultAntsPool(mp)
 //
-//	// Now all calls to ants.Submit() will use the MultiPool
+//	// Release the old pool when it's no longer needed
+//	if oldPool != nil {
+//		oldPool.Release()
+//	}
 //
 // Note: This function is not thread-safe. It should be called during application initialization,
 // before any goroutines are started or any tasks are submitted to the default pool.
-func SetDefaultAntsPool(pool Pooler) {
+func SwapDefaultAntsPool(pool Pooler) Pooler {
+	// If the provided pool is nil, don't return the old default pool to prevent unauthorized access
+	if pool == nil {
+		return nil
+	}
+	oldPool := defaultAntsPool
 	defaultAntsPool = pool
+	return oldPool
+}
+
+// SetDefaultPool safely sets the default pool to the given pool instance and releases the old pool.
+// This function is a safer alternative to SwapDefaultAntsPool for most use cases,
+// as it automatically releases the old pool to prevent goroutine leaks.
+//
+// If the provided pool is nil, the default pool remains unchanged and no action is taken.
+//
+// The function ensures that the old pool's resources are properly released,
+// including stopping its cleanup goroutines, heartbeat goroutines, and worker queue.
+//
+// Example:
+//
+//	// Create a MultiPool and set it as the default pool
+//	mp, _ := ants.NewMultiPool(2, 1000, ants.RoundRobin)
+//	ants.SetDefaultPool(mp)
+//
+//	// The old pool is automatically released, no need to manually release it
+//
+// Note: This function is not thread-safe. It should be called during application initialization,
+// before any goroutines are started or any tasks are submitted to the default pool.
+func SetDefaultPool(pool Pooler) {
+	if oldPool := SwapDefaultAntsPool(pool); oldPool != nil && oldPool != pool {
+		oldPool.Release()
+	}
 }
 
 // MaxBlockingTasks returns the maximum number of goroutines that are blocked when it reaches the capacity of default pool.
